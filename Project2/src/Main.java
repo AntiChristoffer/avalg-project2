@@ -37,13 +37,37 @@ public class Main {
 		ArrayList<Integer> tour = greedyTour(coords);
 		print(tour);
 		double dist = calcTotalTourLength(tour);
-		System.out.println("distance = " +Double.toString(dist));
+		System.out.println("distance after greedy = " +Double.toString(dist));
+		tour = twoOPT(tour);
+		dist = calcTotalTourLength(tour);
+		System.out.println("distance after 2opt = " +Double.toString(dist));
 	}
 	
 	public void print(ArrayList<Integer> tour){
 		for(int i = 0; i<tour.size(); i++){
 			System.out.println(tour.get(i));
 		}
+	}
+	
+	public ArrayList<Integer> twoOPT(ArrayList<Integer> tour){
+		double newDistance = -1;
+		double bestDistance = 0;
+		ArrayList<Integer> newTour = new ArrayList<Integer>();
+		whileloop:
+		while(bestDistance > newDistance){
+			bestDistance = calcTotalTourLength(tour);
+			for(int i = 0; i<tour.size()-1; i++){
+				for(int j = i+1; j<tour.size(); i++){
+					newTour = twoOptSwap(tour, i, j);
+					newDistance = calcTotalTourLength(newTour);
+					if(newDistance < bestDistance){
+						tour = newTour;
+						continue whileloop;
+					}
+				}
+			}
+		}
+		return tour;
 	}
 	
 	/*GreedyTour - given on Kattis
@@ -91,6 +115,19 @@ public class Main {
 			distance += dist(coords.get(tour.get(i-1)), coords.get(tour.get(i)));
 		}
 		return distance;
+	}
+	
+	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
+		int start = i;
+		int end = k;
+		while(start < end){
+			int tmp = route.get(start);
+			route.set(start, route.get(end));
+			route.set(end, tmp);
+			start ++;
+			end --;
+		}
+		return route;
 	}
 	
 }
