@@ -5,18 +5,25 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
+/*
+ * All reference distances using sample.txt sample input
+ * distance with greedyTour (0 8 5 4 3 9 6 2 1 7) = 225.7290569637806
+ */
+
 public class Main {
 
 	double size;
+	ArrayList<Tuple> coords;
+	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
 		main.run();
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader (new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in));
+		BufferedReader br = new BufferedReader (new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		size = Double.parseDouble(br.readLine());
-		ArrayList<Tuple> coords = new ArrayList<Tuple>();
+		coords = new ArrayList<Tuple>();
 		//System.out.println("created coords");
 		for(int i = 0; i<size; i++){
 			String temp = br.readLine();
@@ -29,6 +36,8 @@ public class Main {
 		//System.out.println("created array");
 		ArrayList<Integer> tour = greedyTour(coords);
 		print(tour);
+		double dist = calcTotalTourLength(tour);
+		System.out.println("distance = " +Double.toString(dist));
 	}
 	
 	public void print(ArrayList<Integer> tour){
@@ -74,6 +83,14 @@ public class Main {
 		double a = Math.abs(first.getX()-second.getX());
 		double b = Math.abs(first.getY()-second.getY());
 		return Math.sqrt(Math.pow(a, 2)+Math.pow(b, 2));
+	}
+	
+	public double calcTotalTourLength(ArrayList<Integer> tour){
+		double distance = 0;
+		for(int i = 1; i < tour.size(); i++){
+			distance += dist(coords.get(tour.get(i-1)), coords.get(tour.get(i)));
+		}
+		return distance;
 	}
 	
 }
