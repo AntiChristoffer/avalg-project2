@@ -5,8 +5,8 @@ public class Tuple {
 	double y;
 	
 	public Tuple(double x, double y){
-		x = this.x;
-		y = this.y;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public double getX() {
@@ -25,9 +25,6 @@ public class Tuple {
 		this.y = y;
 	}
 	
-	public double dist(){
-		return Math.abs(x-y);
-	}
 	
 	
 }

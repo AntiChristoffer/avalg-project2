@@ -7,30 +7,34 @@ import java.util.ArrayList;
 
 public class Main {
 
-	int size;
+	double size;
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		// TODO Auto-generated method stub
 		Main main = new Main();
-		main.print();
 		main.run();
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new FileReader("sample.in")); // TODO - change to (new InputStreamReader(System.in));
-		size = Integer.parseInt(br.readLine());
+		BufferedReader br = new BufferedReader (new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in));
+		size = Double.parseDouble(br.readLine());
 		ArrayList<Tuple> coords = new ArrayList<Tuple>();
-		System.out.println("created coords");
+		//System.out.println("created coords");
 		for(int i = 0; i<size; i++){
 			String temp = br.readLine();
 			String[] t = temp.split(" ");
-			Tuple tmpTuple = new Tuple(Integer.parseInt(t[0]), Integer.parseInt(t[1]));
+			double tmpX = Double.parseDouble(t[0]);
+			double tmpY = Double.parseDouble(t[1]);
+			Tuple tmpTuple = new Tuple(tmpX, tmpY);
 			coords.add(i,tmpTuple);
 		}
-		System.out.println("created array");
+		//System.out.println("created array");
+		ArrayList<Integer> tour = greedyTour(coords);
+		print(tour);
 	}
 	
-	public void print(){
-		System.out.println("Hello World! Testing git from Eclipse");
+	public void print(ArrayList<Integer> tour){
+		for(int i = 0; i<tour.size(); i++){
+			System.out.println(tour.get(i));
+		}
 	}
 	
 	/*GreedyTour - given on Kattis
@@ -50,11 +54,26 @@ public class Main {
 		tour.add(0, 0);
 		used.add(0, true);
 		for(int i = 1; i < coords.size(); i++){
+			used.add(i, false);
+			tour.add(i, 0);
+		}
+		for(int i = 1; i < coords.size(); i++){
 			int best = -1;
 			for(int j = 0; j<coords.size(); j++){
+				if(!used.get(j) && (best == -1 || dist(coords.get(tour.get(i-1)), coords.get(j)) < dist(coords.get(tour.get(i-1)), coords.get(best)))){
+					best = j;
+				}
 			}
+			tour.set(i, best);
+			used.set(best, true);
 		}
 		return tour;
 	}
 
+	public double dist(Tuple first, Tuple second){
+		double a = Math.abs(first.getX()-second.getX());
+		double b = Math.abs(first.getY()-second.getY());
+		return Math.sqrt(Math.pow(a, 2)+Math.pow(b, 2));
+	}
+	
 }
