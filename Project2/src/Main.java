@@ -41,6 +41,16 @@ public class Main {
 		tour = twoOPT(tour);
 		dist = calcTotalTourLength(tour);
 		System.out.println("distance after 2opt = " +Double.toString(dist));
+		
+		/*test swap
+		ArrayList<Integer> test = new ArrayList<Integer>();
+		for(int i=0; i<5; i++){
+			test.add(i);
+		}
+		twoOptSwap(test, 0, 4);
+		for(int i=0; i<test.size(); i++){
+			System.out.println(test.get(i));
+		}*/
 	}
 	
 	public void print(ArrayList<Integer> tour){
@@ -50,24 +60,27 @@ public class Main {
 	}
 	
 	public ArrayList<Integer> twoOPT(ArrayList<Integer> tour){
-		double newDistance = -1;
-		double bestDistance = 0;
+		
+		double newDistance = Double.MAX_VALUE;
+		double bestDistance = calcTotalTourLength(tour);
+		ArrayList<Integer> bestTour = tour;
 		ArrayList<Integer> newTour = new ArrayList<Integer>();
-		whileloop:
-		while(bestDistance > newDistance){
-			bestDistance = calcTotalTourLength(tour);
+		boolean foundBetter = true;
+		while(foundBetter){
+			foundBetter = false;
 			for(int i = 0; i<tour.size()-1; i++){
-				for(int j = i+1; j<tour.size(); i++){
+				for(int j = i+1; j<tour.size(); j++){
 					newTour = twoOptSwap(tour, i, j);
 					newDistance = calcTotalTourLength(newTour);
 					if(newDistance < bestDistance){
-						tour = newTour;
-						continue whileloop;
+						bestTour = newTour;
+						bestDistance = newDistance;
+						foundBetter = true;
 					}
 				}
 			}
 		}
-		return tour;
+		return bestTour;
 	}
 	
 	/*GreedyTour - given on Kattis
