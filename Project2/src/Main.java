@@ -167,10 +167,7 @@ public class Main {
 	}
 	
 	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
-		ArrayList<Integer> temp = new ArrayList<Integer>();
-		for(int j = 0; j<route.size(); j++){
-			temp.add(j, route.get(j));
-		}
+		ArrayList<Integer> temp = (ArrayList<Integer>) route.clone();
 		int start = i;
 		int end = k;
 		while(start < end){
