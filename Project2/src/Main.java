@@ -128,8 +128,16 @@ public class Main {
 	
 	public double calcTotalTourLength(ArrayList<Integer> tour){
 		double distance = 0;
-		for(int i = 1; i < tour.size(); i++){
-			distance += dist(coords.get(tour.get(i-1)), coords.get(tour.get(i)));
+		for(int i = 0; i < tour.size()-1; i++){
+			distance += dist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
+		}
+		return distance;
+	}
+	
+	public double calcIntervalLength(ArrayList<Integer> tour, int start, int end){
+		double distance = 0;
+		for(int i = start; i < end-1; i++){
+			distance += dist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
 		}
 		return distance;
 	}
