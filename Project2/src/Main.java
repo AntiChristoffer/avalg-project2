@@ -147,9 +147,8 @@ public class Main {
 	public boolean calcDistSwitch(ArrayList<Integer> newRoute, ArrayList<Integer> bestRoute, int i, int j){
 		double bestDist = 0;
 		double newDist = 0;
-		if(i == 0 && j != newRoute.size()-1){
-			bestDist += calcDist(coords.get(bestRoute.get(j)), coords.get(bestRoute.get(j+1)));
-			newDist += calcDist(coords.get(newRoute.get(j)), coords.get(j+1));
+		if(i == 0 && j == newRoute.size()-1){
+			return false;
 		}else if(j == newRoute.size()-1 && i != 0){
 			bestDist += calcDist(coords.get(bestRoute.get(i)), coords.get(bestRoute.get(i-1)));
 			newDist += calcDist(coords.get(newRoute.get(i)), coords.get(newRoute.get(i-1)));
