@@ -23,7 +23,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); //(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		size = Double.parseDouble(br.readLine());
 		coords = new ArrayList<Tuple>();
 		//System.out.println("created coords");
@@ -36,6 +36,11 @@ public class Main {
 			coords.add(i,tmpTuple);
 		}
 		br.close();
+		BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		System.out.println("Enter Digit 1:");
+		while(Integer.parseInt(brtemp.readLine()) != 1){
+			System.out.println("1 sa jag ju!");
+		}
 		//System.out.println("created array");
 		ArrayList<Integer> tour = greedyTour(coords);
 		/*print(tour);
@@ -47,14 +52,14 @@ public class Main {
 		//System.out.println("distance after 2opt = " +Double.toString(dist));
 		
 		//test swap
-		ArrayList<Integer> test = new ArrayList<Integer>();
+		/*ArrayList<Integer> test = new ArrayList<Integer>();
 		for(int i=0; i<5; i++){
 			test.add(i);
 		}
 		twoOptSwap(test, 0, 4);
 		for(int i=0; i<test.size(); i++){
 			System.out.println(test.get(i));
-		}
+		}*/
 	}
 	
 	public void print(ArrayList<Integer> tour){
