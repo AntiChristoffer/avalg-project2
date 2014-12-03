@@ -23,7 +23,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader (new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); //(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		size = Double.parseDouble(br.readLine());
 		coords = new ArrayList<Tuple>();
 		//System.out.println("created coords");
@@ -35,17 +35,18 @@ public class Main {
 			Tuple tmpTuple = new Tuple(tmpX, tmpY);
 			coords.add(i,tmpTuple);
 		}
+		br.close();
 		//System.out.println("created array");
 		ArrayList<Integer> tour = greedyTour(coords);
-		print(tour);
+		/*print(tour);
 		double dist = calcTotalTourLength(tour);
-		System.out.println("distance after greedy = " +Double.toString(dist));
+		System.out.println("distance after greedy = " +Double.toString(dist));*/
 		tour = twoOPT(tour);
-		dist = calcTotalTourLength(tour);
+		//dist = calcTotalTourLength(tour);
 		print(tour);
-		System.out.println("distance after 2opt = " +Double.toString(dist));
+		//System.out.println("distance after 2opt = " +Double.toString(dist));
 		
-		/*test swap
+		//test swap
 		ArrayList<Integer> test = new ArrayList<Integer>();
 		for(int i=0; i<5; i++){
 			test.add(i);
@@ -53,7 +54,7 @@ public class Main {
 		twoOptSwap(test, 0, 4);
 		for(int i=0; i<test.size(); i++){
 			System.out.println(test.get(i));
-		}*/
+		}
 	}
 	
 	public void print(ArrayList<Integer> tour){
@@ -167,6 +168,7 @@ public class Main {
 	}
 	
 	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
+		@SuppressWarnings("unchecked")
 		ArrayList<Integer> temp = (ArrayList<Integer>) route.clone();
 		int start = i;
 		int end = k;
