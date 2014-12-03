@@ -74,12 +74,13 @@ public class Main {
 			for(int i = 0; i<tour.size()-1; i++){
 				for(int j = i+1; j<tour.size(); j++){
 					newTour = twoOptSwap(bestTour, i, j);
+					//bestDistance = calcIntervalLength(bestTour, i, j);
 					newDistance = calcTotalTourLength(newTour);
-					if(newDistance < bestDistance){
+					if(calcDistSwitch(newTour, bestTour, i,j)){
 						//bestTour.addAll(newTour);
 						//Collections.copy(bestTour, newTour);
 						bestTour = new ArrayList<Integer>(newTour);
-						bestDistance = newDistance;
+						bestDistance = calcTotalTourLength(newTour);
 						foundBetter = true;
 					}
 				}
@@ -111,7 +112,7 @@ public class Main {
 		for(int i = 1; i < coords.size(); i++){
 			int best = -1;
 			for(int j = 0; j<coords.size(); j++){
-				if(!used.get(j) && (best == -1 || dist(coords.get(tour.get(i-1)), coords.get(j)) < dist(coords.get(tour.get(i-1)), coords.get(best)))){
+				if(!used.get(j) && (best == -1 || calcDist(coords.get(tour.get(i-1)), coords.get(j)) < calcDist(coords.get(tour.get(i-1)), coords.get(best)))){
 					best = j;
 				}
 			}
@@ -121,7 +122,7 @@ public class Main {
 		return tour;
 	}
 
-	public double dist(Tuple first, Tuple second){
+	public double calcDist(Tuple first, Tuple second){
 		double a = Math.abs(first.getX()-second.getX());
 		double b = Math.abs(first.getY()-second.getY());
 		return Math.sqrt(Math.pow(a, 2)+Math.pow(b, 2));
@@ -130,7 +131,7 @@ public class Main {
 	public double calcTotalTourLength(ArrayList<Integer> tour){
 		double distance = 0;
 		for(int i = 0; i < tour.size()-1; i++){
-			distance += dist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
+			distance += calcDist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
 		}
 		return distance;
 	}
@@ -138,9 +139,29 @@ public class Main {
 	public double calcIntervalLength(ArrayList<Integer> tour, int start, int end){
 		double distance = 0;
 		for(int i = start; i < end; i++){
-			distance += dist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
+			distance += calcDist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
 		}
 		return distance;
+	}
+	
+	public boolean calcDistSwitch(ArrayList<Integer> newRoute, ArrayList<Integer> bestRoute, int i, int j){
+		double bestDist = 0;
+		double newDist = 0;
+		if(i == 0 && j != newRoute.size()-1){
+			bestDist += calcDist(coords.get(bestRoute.get(j)), coords.get(bestRoute.get(j+1)));
+			newDist += calcDist(coords.get(newRoute.get(j)), coords.get(j+1));
+		}else if(j == newRoute.size()-1 && i != 0){
+			bestDist += calcDist(coords.get(bestRoute.get(i)), coords.get(bestRoute.get(i-1)));
+			newDist += calcDist(coords.get(newRoute.get(i)), coords.get(newRoute.get(i-1)));
+		} else if (j != newRoute.size()-1 && i != 0){
+			bestDist += calcDist(coords.get(bestRoute.get(i)), coords.get(bestRoute.get(i-1))) + calcDist(coords.get(bestRoute.get(j)), coords.get(bestRoute.get(j+1)));
+			newDist += calcDist(coords.get(newRoute.get(i)), coords.get(newRoute.get(i-1))) + calcDist(coords.get(newRoute.get(j)), coords.get(j+1));
+		}
+		if(newDist < bestDist){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
