@@ -152,9 +152,12 @@ public class Main {
 		}else if(j == newRoute.size()-1){
 			bestDist += calcDist(coords.get(bestRoute.get(i)), coords.get(bestRoute.get(i-1)));
 			newDist += calcDist(coords.get(newRoute.get(i)), coords.get(newRoute.get(i-1)));
-		} else if (i != 0){
+		} else if (i == 0){
 			bestDist += calcDist(coords.get(bestRoute.get(j)), coords.get(bestRoute.get(j+1)));
 			newDist += calcDist(coords.get(newRoute.get(j)), coords.get(newRoute.get(j+1)));
+		} else {
+			bestDist += calcDist(coords.get(bestRoute.get(j)), coords.get(bestRoute.get(j+1))) + calcDist(coords.get(bestRoute.get(i)), coords.get(bestRoute.get(i-1)));
+			newDist += calcDist(coords.get(newRoute.get(j)), coords.get(newRoute.get(j+1))) + calcDist(coords.get(newRoute.get(i)), coords.get(newRoute.get(i-1)));
 		}
 		if(newDist < bestDist){
 			return true;
