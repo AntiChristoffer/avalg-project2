@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 /*
@@ -40,6 +41,7 @@ public class Main {
 		System.out.println("distance after greedy = " +Double.toString(dist));
 		tour = twoOPT(tour);
 		dist = calcTotalTourLength(tour);
+		print(tour);
 		System.out.println("distance after 2opt = " +Double.toString(dist));
 		
 		/*test swap
@@ -70,10 +72,12 @@ public class Main {
 			foundBetter = false;
 			for(int i = 0; i<tour.size()-1; i++){
 				for(int j = i+1; j<tour.size(); j++){
-					newTour = twoOptSwap(tour, i, j);
+					newTour = twoOptSwap(bestTour, i, j);
 					newDistance = calcTotalTourLength(newTour);
 					if(newDistance < bestDistance){
-						bestTour = newTour;
+						//bestTour.addAll(newTour);
+						//Collections.copy(bestTour, newTour);
+						bestTour = new ArrayList<Integer>(newTour);
 						bestDistance = newDistance;
 						foundBetter = true;
 					}
@@ -131,16 +135,20 @@ public class Main {
 	}
 	
 	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		for(int j = 0; j<route.size(); j++){
+			temp.add(j, route.get(j));
+		}
 		int start = i;
 		int end = k;
 		while(start < end){
 			int tmp = route.get(start);
-			route.set(start, route.get(end));
-			route.set(end, tmp);
+			temp.set(start, route.get(end));
+			temp.set(end, tmp);
 			start ++;
 			end --;
 		}
-		return route;
+		return temp;
 	}
 	
 }
