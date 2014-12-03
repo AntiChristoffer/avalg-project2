@@ -9,6 +9,7 @@ import java.util.Collections;
 /*
  * All reference distances using sample.txt sample input
  * distance with greedyTour (0 8 5 4 3 9 6 2 1 7) = 225.7290569637806
+ * distance with 2-opt (4 5 8 0 2 6 9 3 1 7) = 188.74784321058627
  */
 
 public class Main {
@@ -136,7 +137,7 @@ public class Main {
 	
 	public double calcIntervalLength(ArrayList<Integer> tour, int start, int end){
 		double distance = 0;
-		for(int i = start; i < end-1; i++){
+		for(int i = start; i < end; i++){
 			distance += dist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
 		}
 		return distance;
