@@ -17,6 +17,8 @@ public class Main {
 	double size;
 	ArrayList<Tuple> coords;
 	double[][] distances;
+	final boolean DEBUG = false;
+	final boolean MONITORING = false;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
@@ -27,7 +29,7 @@ public class Main {
 		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		size = Double.parseDouble(br.readLine());
 		coords = new ArrayList<Tuple>();
-		//System.out.println("created coords");
+		if(DEBUG)System.out.println("created coords");
 		for(int i = 0; i<size; i++){
 			String temp = br.readLine();
 			String[] t = temp.split(" ");
@@ -47,33 +49,32 @@ public class Main {
 				distances[j][i] = dist;
 			}
 		}
-		printMatrix();
+		//if(DEBUG)printMatrix();
 		
-		BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
-		System.out.println("Enter Digit 1:");
-		while(Integer.parseInt(brtemp.readLine()) != 1){
-			System.out.println("1 sa jag ju!");
+		if(MONITORING){
+			BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+			System.out.println("Enter Digit 1:");
+			while(Integer.parseInt(brtemp.readLine()) != 1){
+				System.out.println("1 sa jag ju!");
+			}
 		}
+		
 		ArrayList<Integer> tour = new ArrayList<Integer>();
-		//System.out.println("created array");
-		tour = greedyTour(coords);
-		/*print(tour);
-		double dist = calcTotalTourLength(tour);
-		System.out.println("distance after greedy = " +Double.toString(dist));*/
-		tour = twoOPT(tour);
-		//dist = calcTotalTourLength(tour);
-		//print(tour);
-		//System.out.println("distance after 2opt = " +Double.toString(dist));
+		if(DEBUG)System.out.println("created array");
 		
-		//test swap
-		/*ArrayList<Integer> test = new ArrayList<Integer>();
-		for(int i=0; i<5; i++){
-			test.add(i);
+		tour = greedyTour(coords);
+		if(DEBUG){
+			double dist = calcTotalTourLength(tour);
+			print(tour);
+			System.out.println("distance after greedy = " +Double.toString(dist));
 		}
-		twoOptSwap(test, 0, 4);
-		for(int i=0; i<test.size(); i++){
-			System.out.println(test.get(i));
-		}*/
+		
+		tour = twoOPT(tour);
+		print(tour);
+			double dist = calcTotalTourLength(tour);
+			System.out.println("distance after 2opt = " +Double.toString(dist));
+		
+		
 	}
 	
 	public void printMatrix(){
@@ -92,10 +93,10 @@ public class Main {
 	}
 	
 	public ArrayList<Integer> twoOPT(ArrayList<Integer> tour){
-		
 		ArrayList<Integer> newTour = new ArrayList<Integer>();
 		boolean foundBetter = true;
-		while(foundBetter){
+		int iiter = 0;
+		while(iiter <10){
 			foundBetter = false;
 			for(int i = 0; i<tour.size()-1; i++){
 				for(int j = i+1; j<tour.size(); j++){
@@ -103,25 +104,14 @@ public class Main {
 					foundBetter = calcDistSwitch(newTour, tour, i,j);
 					if(foundBetter){
 						tour = new ArrayList<Integer>(newTour);
-						foundBetter = true;
 					}
 				}
 			}
+			iiter++;
 		}
 		return tour;
 	}
 	
-	/*GreedyTour - given on Kattis
-   tour[0] = 0
-   used[0] = true
-   for i = 1 to n-1
-      best = -1
-      for j = 0 to n-1
-         if not used[j] and (best = -1 or dist(tour[i-1],j) < dist(tour[i-1],best))
-	    best = j
-      tour[i] = best
-      used[best] = true
-   return tour*/
 	public ArrayList<Integer> greedyTour(ArrayList<Tuple> coords){
 		ArrayList<Integer> tour = new ArrayList<Integer>();
 		ArrayList<Boolean> used = new ArrayList<Boolean>();
@@ -134,7 +124,7 @@ public class Main {
 		for(int i = 1; i < coords.size(); i++){
 			int best = -1;
 			for(int j = 0; j<coords.size(); j++){
-				if(!used.get(j) && (best == -1 || calcDist(coords.get(tour.get(i-1)), coords.get(j)) < calcDist(coords.get(tour.get(i-1)), coords.get(best)))){
+				if(!used.get(j) && (best == -1 || distances[tour.get(i-1)][j] < distances[tour.get(i-1)][best])){
 					best = j;
 				}
 			}
@@ -153,20 +143,30 @@ public class Main {
 	public double calcTotalTourLength(ArrayList<Integer> tour){
 		double distance = 0;
 		for(int i = 0; i < tour.size()-1; i++){
-			distance += calcDist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
+			distance += distances[tour.get(i)][tour.get(i+1)];
 		}
-		return distance;
-	}
-	
-	public double calcIntervalLength(ArrayList<Integer> tour, int start, int end){
-		double distance = 0;
-		for(int i = start; i < end; i++){
-			distance += calcDist(coords.get(tour.get(i)), coords.get(tour.get(i+1)));
-		}
+		distance += distances[tour.get(0)][tour.get(tour.size()-1)];
 		return distance;
 	}
 	
 	public boolean calcDistSwitch(ArrayList<Integer> newRoute, ArrayList<Integer> bestRoute, int i, int j){
+		int iminone = i-1;
+		int jplusone = (j+1)%(bestRoute.size());
+		if(i == 0) iminone = bestRoute.size()-1;
+		
+		double difference = 0;
+		difference += distances[bestRoute.get(iminone)][bestRoute.get(i)];
+		difference -= distances[newRoute.get(iminone)][newRoute.get(i)];
+		
+		difference += distances[bestRoute.get(j)][bestRoute.get(jplusone)];
+		difference -= distances[newRoute.get(j)][newRoute.get(jplusone)];
+		
+		if(difference > 0){
+			return true;
+		}
+		return false;
+		/*
+		
 		double bestDist = 0;
 		double newDist = 0;
 		if(i == 0 && j == newRoute.size()-1){
@@ -186,6 +186,7 @@ public class Main {
 		} else {
 			return false;
 		}
+		*/
 	}
 	
 	public ArrayList<Integer> twoOptSwap(ArrayList<Integer> route, int i, int k){
@@ -202,38 +203,4 @@ public class Main {
 		}
 		return temp;
 	}
-	/*
-	 * 
-		public Vertex[] calculatePath(final Vertex[] vertices) {
-		    double change = Double.MAX_VALUE;
-		 
-		    while (change > 0) {
-		      for (int i = 0; i < vertices.length - 1; i++) {
-		        for (int j = i + 1; j < vertices.length; j++) {
-		          final Vertex v1 = vertices[i];
-		          final Vertex v2 = vertices[i + 1];
-		          final Vertex v3 = vertices[j];
-		          final Vertex v4 = vertices[(j + 1) % vertices.length];
-		 
-		          final double distance12 = distances[v1.i()][v2.i()];
-		          final double distance34 = distances[v3.i()][v4.i()];
-		          final double distance13 = distances[v1.i()][v3.i()];
-		          final double distance24 = distances[v2.i()][v4.i()];
-		 
-		          // The change in distance is the difference of the sums of the current
-		          // and new distances.
-		          change = (distance12 + distance34) - (distance13 + distance24);
-		 
-		          if (change > 0) {
-		            vertices[i + 1] = v3;
-		            vertices[j] = v2;
-		          }
-		        }
-		      }
-		    }
-		    
-		    return vertices;
-		  }
-	 */
-	// FUCK YOU ECLIPSE
 }
