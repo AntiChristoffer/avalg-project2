@@ -25,7 +25,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		coords = new Tuple[listsize];
 		if(DEBUG)System.out.println("created coords");
@@ -114,10 +114,10 @@ public class Main {
 		boolean[] used = new boolean[listsize];
 		tour[0] = 0;
 		used[0] = true;
-		for(int i = 1; i < listsize; i++){
+		/*for(int i = 1; i < listsize; i++){
 			used[i] = false;
 			tour[i] = 0;
-		}
+		}*/
 		for(int i = 1; i < listsize; i++){
 			int best = -1;
 			for(int j = 0; j<listsize; j++){
