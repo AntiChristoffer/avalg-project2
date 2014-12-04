@@ -16,6 +16,7 @@ public class Main {
 
 	double size;
 	ArrayList<Tuple> coords;
+	double[][] distances;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
@@ -36,19 +37,32 @@ public class Main {
 			coords.add(i,tmpTuple);
 		}
 		br.close();
+		
+		distances = new double[coords.size()][coords.size()];
+		for(int i=0; i<coords.size();i++){
+			distances[i][i] = 0;
+			for(int j=0; j<i; j++){
+				double dist = calcDist(coords.get(i), coords.get(j));
+				distances[i][j] = dist;
+				distances[j][i] = dist;
+			}
+		}
+		printMatrix();
+		
 		BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		System.out.println("Enter Digit 1:");
 		while(Integer.parseInt(brtemp.readLine()) != 1){
 			System.out.println("1 sa jag ju!");
 		}
+		ArrayList<Integer> tour = new ArrayList<Integer>();
 		//System.out.println("created array");
-		ArrayList<Integer> tour = greedyTour(coords);
+		tour = greedyTour(coords);
 		/*print(tour);
 		double dist = calcTotalTourLength(tour);
 		System.out.println("distance after greedy = " +Double.toString(dist));*/
 		tour = twoOPT(tour);
 		//dist = calcTotalTourLength(tour);
-		print(tour);
+		//print(tour);
 		//System.out.println("distance after 2opt = " +Double.toString(dist));
 		
 		//test swap
@@ -62,6 +76,15 @@ public class Main {
 		}*/
 	}
 	
+	public void printMatrix(){
+		for(int i=0; i<distances.length; i++){
+			for(int j=0; j<distances.length; j++){
+				System.out.print(distances[i][j]+"\t");
+			}
+			System.out.println();
+		}
+	}
+	
 	public void print(ArrayList<Integer> tour){
 		for(int i = 0; i<tour.size(); i++){
 			System.out.println(tour.get(i));
@@ -70,29 +93,22 @@ public class Main {
 	
 	public ArrayList<Integer> twoOPT(ArrayList<Integer> tour){
 		
-		double newDistance = Double.MAX_VALUE;
-		double bestDistance = calcTotalTourLength(tour);
-		ArrayList<Integer> bestTour = tour;
 		ArrayList<Integer> newTour = new ArrayList<Integer>();
 		boolean foundBetter = true;
 		while(foundBetter){
 			foundBetter = false;
 			for(int i = 0; i<tour.size()-1; i++){
 				for(int j = i+1; j<tour.size(); j++){
-					newTour = twoOptSwap(bestTour, i, j);
-					//bestDistance = calcIntervalLength(bestTour, i, j);
-					newDistance = calcTotalTourLength(newTour);
-					if(calcDistSwitch(newTour, bestTour, i,j)){
-						//bestTour.addAll(newTour);
-						//Collections.copy(bestTour, newTour);
-						bestTour = new ArrayList<Integer>(newTour);
-						bestDistance = calcTotalTourLength(newTour);
+					newTour = twoOptSwap(tour, i, j);
+					foundBetter = calcDistSwitch(newTour, tour, i,j);
+					if(foundBetter){
+						tour = new ArrayList<Integer>(newTour);
 						foundBetter = true;
 					}
 				}
 			}
 		}
-		return bestTour;
+		return tour;
 	}
 	
 	/*GreedyTour - given on Kattis
@@ -186,5 +202,37 @@ public class Main {
 		}
 		return temp;
 	}
-	
+	/*
+	 * 
+		public Vertex[] calculatePath(final Vertex[] vertices) {
+		    double change = Double.MAX_VALUE;
+		 
+		    while (change > 0) {
+		      for (int i = 0; i < vertices.length - 1; i++) {
+		        for (int j = i + 1; j < vertices.length; j++) {
+		          final Vertex v1 = vertices[i];
+		          final Vertex v2 = vertices[i + 1];
+		          final Vertex v3 = vertices[j];
+		          final Vertex v4 = vertices[(j + 1) % vertices.length];
+		 
+		          final double distance12 = distances[v1.i()][v2.i()];
+		          final double distance34 = distances[v3.i()][v4.i()];
+		          final double distance13 = distances[v1.i()][v3.i()];
+		          final double distance24 = distances[v2.i()][v4.i()];
+		 
+		          // The change in distance is the difference of the sums of the current
+		          // and new distances.
+		          change = (distance12 + distance34) - (distance13 + distance24);
+		 
+		          if (change > 0) {
+		            vertices[i + 1] = v3;
+		            vertices[j] = v2;
+		          }
+		        }
+		      }
+		    }
+		    
+		    return vertices;
+		  }
+	 */
 }
