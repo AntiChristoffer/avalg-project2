@@ -140,7 +140,7 @@ public class Main {
 		double b = Math.abs(first.getY()-second.getY());
 		a *= a;
 		b *= b;
-		return a+b;
+		return Math.sqrt(a+b);
 	}
 	
 	public double calcTotalTourLength(ArrayList<Integer> tour){
