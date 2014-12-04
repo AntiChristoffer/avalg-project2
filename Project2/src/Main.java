@@ -17,6 +17,7 @@ public class Main {
 	double size;
 	ArrayList<Tuple> coords;
 	double[][] distances;
+	int listsize;
 	final boolean DEBUG = false;
 	final boolean MONITORING = false;
 	
@@ -39,9 +40,9 @@ public class Main {
 			coords.add(i,tmpTuple);
 		}
 		br.close();
-		
-		distances = new double[coords.size()][coords.size()];
-		for(int i=0; i<coords.size();i++){
+		listsize = coords.size();
+		distances = new double[listsize][listsize];
+		for(int i=0; i<listsize;i++){
 			distances[i][i] = 0;
 			for(int j=0; j<i; j++){
 				double dist = calcDist(coords.get(i), coords.get(j));
@@ -78,8 +79,8 @@ public class Main {
 	}
 	
 	public void printMatrix(){
-		for(int i=0; i<distances.length; i++){
-			for(int j=0; j<distances.length; j++){
+		for(int i=0; i<listsize; i++){
+			for(int j=0; j<listsize; j++){
 				System.out.print(distances[i][j]+"\t");
 			}
 			System.out.println();
@@ -87,7 +88,7 @@ public class Main {
 	}
 	
 	public void print(ArrayList<Integer> tour){
-		for(int i = 0; i<tour.size(); i++){
+		for(int i = 0; i<listsize; i++){
 			System.out.println(tour.get(i));
 		}
 	}
@@ -95,11 +96,11 @@ public class Main {
 	public ArrayList<Integer> twoOPT(ArrayList<Integer> tour){
 		ArrayList<Integer> newTour = new ArrayList<Integer>();
 		boolean foundBetter = true;
-		int iiter = 0;
-		while(iiter <10){
+		int iter = 0;
+		while(iter <10){
 			foundBetter = false;
-			for(int i = 0; i<tour.size()-1; i++){
-				for(int j = i+1; j<tour.size(); j++){
+			for(int i = 0; i<listsize-1; i++){
+				for(int j = i+1; j<listsize; j++){
 					newTour = twoOptSwap(tour, i, j);
 					foundBetter = calcDistSwitch(newTour, tour, i,j);
 					if(foundBetter){
@@ -107,7 +108,7 @@ public class Main {
 					}
 				}
 			}
-			iiter++;
+			iter++;
 		}
 		return tour;
 	}
@@ -117,13 +118,13 @@ public class Main {
 		ArrayList<Boolean> used = new ArrayList<Boolean>();
 		tour.add(0, 0);
 		used.add(0, true);
-		for(int i = 1; i < coords.size(); i++){
+		for(int i = 1; i < listsize; i++){
 			used.add(i, false);
 			tour.add(i, 0);
 		}
-		for(int i = 1; i < coords.size(); i++){
+		for(int i = 1; i < listsize; i++){
 			int best = -1;
-			for(int j = 0; j<coords.size(); j++){
+			for(int j = 0; j<listsize; j++){
 				if(!used.get(j) && (best == -1 || distances[tour.get(i-1)][j] < distances[tour.get(i-1)][best])){
 					best = j;
 				}
@@ -137,12 +138,14 @@ public class Main {
 	public double calcDist(Tuple first, Tuple second){
 		double a = Math.abs(first.getX()-second.getX());
 		double b = Math.abs(first.getY()-second.getY());
-		return Math.sqrt(Math.pow(a, 2)+Math.pow(b, 2));
+		a *= a;
+		b *= b;
+		return a+b;
 	}
 	
 	public double calcTotalTourLength(ArrayList<Integer> tour){
 		double distance = 0;
-		for(int i = 0; i < tour.size()-1; i++){
+		for(int i = 0; i < listsize-1; i++){
 			distance += distances[tour.get(i)][tour.get(i+1)];
 		}
 		distance += distances[tour.get(0)][tour.get(tour.size()-1)];
@@ -151,8 +154,8 @@ public class Main {
 	
 	public boolean calcDistSwitch(ArrayList<Integer> newRoute, ArrayList<Integer> bestRoute, int i, int j){
 		int iminone = i-1;
-		int jplusone = (j+1)%(bestRoute.size());
-		if(i == 0) iminone = bestRoute.size()-1;
+		int jplusone = (j+1)%(listsize);
+		if(i == 0) iminone = listsize-1;
 		
 		double difference = 0;
 		difference += distances[bestRoute.get(iminone)][bestRoute.get(i)];
