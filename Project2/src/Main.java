@@ -167,16 +167,51 @@ public class Main {
 		return false;
 	}
 	
-	public int[] twoOptSwap(int[] route, int i, int k){
+	public int[] twoOptSwap(int[] tour, int i, int k){
 		int start = i;
 		int end = k;
 		while(start < end){
-			int tmp = route[start];
-			route[start] = route[end];
-			route[end] = tmp;
+			int tmp = tour[start];
+			tour[start] = tour[end];
+			tour[end] = tmp;
 			start ++;
 			end --;
 		}
-		return route;
+		return tour;
+	}
+	
+	public boolean twoFive(int[] tour, int start, int end){
+		int i, ione, j, jone, jtwo;
+		i = tour[start];
+		j = tour[end];
+		if(start == 0){
+			ione = tour[listsize-1];
+		}else{
+			ione = tour[start-1];
+		}
+		if(end == listsize-1){
+			jone = tour[0];
+			jtwo = tour[1];
+		}else if(end == listsize -2){
+			jone = tour[end+1];
+			jtwo = tour[0];
+		}else{
+			jone = tour[end+1];
+			jtwo = end+2;
+		}
+		double dist = 0;
+		dist += distances[ione][i];
+		dist += distances[j][jone];
+		dist += distances[jone][jtwo];
+		
+		dist -= distances[ione][jone];
+		dist -= distances[jone][i];
+		dist -= distances[j][jtwo];
+		
+		//if ione i j jone jtwo was longer than ione jone i j jtwo return true for "better solution"
+		if(dist > 0){
+			return true;
+		}
+		return false;
 	}
 }
