@@ -27,6 +27,7 @@ public class Main {
 	public void run() throws NumberFormatException, IOException{
 		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
+		distances = new double[listsize][listsize];
 		coords = new Tuple[listsize];
 		if(DEBUG)System.out.println("created coords");
 		for(int i = 0; i<listsize; i++){
@@ -34,12 +35,19 @@ public class Main {
 			String[] t = temp.split(" ");
 			double tmpX = Double.parseDouble(t[0]);
 			double tmpY = Double.parseDouble(t[1]);
+			distances[i][i] = 0;
+			
 			Tuple tmpTuple = new Tuple(tmpX, tmpY);
 			coords[i] = tmpTuple;
+			for(int j=i-1; j>=0; j--){
+				double dist = calcDist(tmpTuple, coords[j]);
+				distances[i][j] = dist;
+				distances[j][i] = dist;
+			}
 		}
 		br.close();
 		
-		distances = new double[listsize][listsize];
+		/*
 		for(int i=0; i<listsize;i++){
 			distances[i][i] = 0;
 			for(int j=0; j<i; j++){
@@ -47,8 +55,8 @@ public class Main {
 				distances[i][j] = dist;
 				distances[j][i] = dist;
 			}
-		}
-		//if(DEBUG)printMatrix();
+		}*/
+		printMatrix();
 		
 		if(MONITORING){
 			BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
@@ -200,22 +208,24 @@ public class Main {
 	
 	public int[] twoHalfOptSwap(int[] tour, int start, int end){
 		int toMove;
+
 		if(end == listsize -1){
 			toMove = tour[0];
 		}else{
 			toMove = tour[end+1];
 		}
 		
-		int first = tour[start+1];
+		int first = tour[end];
 		
-		int i = start+1;
-		while(i < end-1){
+		//int i = start+1;
+		/*while(i <= end-1){
 			int next = tour[i+1];
 			tour[i+1] = first;
 			first = next;
 			i++;
-		}
-		//System.arraycopy(tour, start+1, tour, start+2, end-start-1);
+		}*/
+		int elements=end-start-1;
+		System.arraycopy(tour, start+1, tour, start+2, elements);
 		
 		tour[start+1] = toMove;
 		if(end == listsize -1){
