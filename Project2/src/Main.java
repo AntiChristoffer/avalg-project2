@@ -106,7 +106,8 @@ public class Main {
 					resTwo = calcDistSwitch(tour, i, j);
 					
 					if(resTwo != null && resTwoFive != null){
-						if(resTwoFive <= resTwo){
+						System.out.println("Twofive: "+resTwoFive+" Two: "+resTwo);
+						if(resTwoFive > resTwo){
 							tour = twoOptSwap(tour, i, j);
 						}else{
 							tour = twoHalfOptSwap(tour, i, j);
@@ -170,15 +171,16 @@ public class Main {
 		if(i == 0) iminone = listsize-1;
 		if(j == listsize-1) jplusone = 0;
 		
-		double diff = 0;
-		diff += distances[tour[iminone]][tour[i]];
-		diff += distances[tour[j]][tour[jplusone]];
+		double distold = 0;
+		distold += distances[tour[iminone]][tour[i]];
+		distold += distances[tour[j]][tour[jplusone]];
 		
-		diff -= distances[tour[iminone]][tour[j]];
-		diff -= distances[tour[i]][tour[jplusone]];
+		double distnew = 0;
+		distnew += distances[tour[iminone]][tour[j]];
+		distnew += distances[tour[i]][tour[jplusone]];
 		
-		if(diff > 0){
-			return diff;
+		if(distold > distnew){
+			return distnew;
 		}
 		return null;
 	}
@@ -204,14 +206,16 @@ public class Main {
 			toMove = tour[end+1];
 		}
 		
+		int first = tour[start+1];
+		
 		int i = start+1;
-		int first = tour[i];
 		while(i < end-1){
 			int next = tour[i+1];
 			tour[i+1] = first;
 			first = next;
 			i++;
 		}
+		//System.arraycopy(tour, start+1, tour, start+2, end-start-1);
 		
 		tour[start+1] = toMove;
 		if(end == listsize -1){
@@ -239,18 +243,19 @@ public class Main {
 			jtwo = tour[end+2];
 		}
 		
-		double diff = 0;
-		diff += distances[i][ione];
-		diff += distances[j][jone];
-		diff += distances[jone][jtwo];
+		double distold = 0;
+		distold += distances[i][ione];
+		distold += distances[j][jone];
+		distold += distances[jone][jtwo];
 		
-		diff -= distances[i][jone];
-		diff -= distances[jone][ione];
-		diff -= distances[j][jtwo];
+		double distnew = 0;
+		distnew += distances[i][jone];
+		distnew += distances[jone][ione];
+		distnew += distances[j][jtwo];
 		
 		
-		if(diff > 0){
-			return diff;
+		if(distold > distnew){
+			return distnew;
 		}
 		return null;
 	}
