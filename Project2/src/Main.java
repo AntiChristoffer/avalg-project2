@@ -92,16 +92,31 @@ public class Main {
 	}
 	
 	public int[] twoOPT(int[] tour){
-		boolean foundBetter = true;
+		Double foundBetterTwoOpt;
+		Double foundBetterTwoHalfOpt;
 		int iter = 0;
 		while(iter <10){
-			foundBetter = false;
+			foundBetterTwoOpt = (Double) null;
 			for(int i = 0; i<listsize-1; i++){
 				for(int j = i+1; j<listsize; j++){
-					foundBetter = calcDistSwitch(tour, i, j);
-					if(foundBetter){
+					foundBetterTwoOpt = calcDistSwitch(tour, i, j);
+					foundBetterTwoHalfOpt = twoFive(tour, i, j);
+					if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt != null){
+						if(foundBetterTwoOpt > foundBetterTwoHalfOpt || foundBetterTwoOpt == foundBetterTwoHalfOpt){
+							tour = twoOptSwap(tour, i, j);
+						}else if(foundBetterTwoOpt < foundBetterTwoHalfOpt){
+							tour = twoOptSwap(tour, i, j);
+							tour = twoHalfOptSwap(tour, i, j);
+						}
+					}else if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt == null){
 						tour = twoOptSwap(tour, i, j);
+					}else if(foundBetterTwoOpt == null && foundBetterTwoHalfOpt != null){
+						tour = twoOptSwap(tour, i, j);
+						tour = twoHalfOptSwap(tour, i, j);
+					}else{
+						continue;
 					}
+					
 				}
 			}
 			iter++;
@@ -148,7 +163,7 @@ public class Main {
 		return distance;
 	}
 	
-	public boolean calcDistSwitch(int[] tour, int i, int j){
+	public Double calcDistSwitch(int[] tour, int i, int j){
 		int iminone = i-1;
 		int jplusone = j+1;
 		if(i == 0) iminone = listsize-1;
@@ -162,9 +177,9 @@ public class Main {
 		difference -= distances[tour[i]][tour[jplusone]];
 		
 		if(difference > 0){
-			return true;
+			return difference;
 		}
-		return false;
+		return null;
 	}
 	
 	public int[] twoOptSwap(int[] tour, int i, int k){
@@ -180,7 +195,16 @@ public class Main {
 		return tour;
 	}
 	
-	public boolean twoFive(int[] tour, int start, int end){
+	public int[] twoHalfOptSwap(int[] tour, int i, int j){
+		int a = j-1;
+		int b = j+1;
+		int c = j;
+		tour[j] = b;
+		tour[j+1] = c;
+		return tour;
+	}
+	
+	public Double twoFive(int[] tour, int start, int end){
 		int i, ione, j, jone, jtwo;
 		i = tour[start];
 		j = tour[end];
@@ -197,7 +221,7 @@ public class Main {
 			jtwo = tour[0];
 		}else{
 			jone = tour[end+1];
-			jtwo = end+2;
+			jtwo = tour[end+2];
 		}
 		double dist = 0;
 		dist += distances[ione][i];
@@ -210,8 +234,8 @@ public class Main {
 		
 		//if ione i j jone jtwo was longer than ione jone i j jtwo return true for "better solution"
 		if(dist > 0){
-			return true;
+			return dist;
 		}
-		return false;
+		return null;
 	}
 }
