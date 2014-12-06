@@ -16,7 +16,7 @@ public class Main {
 	Tuple[] coords;
 	double[][] distances;
 	int listsize;
-	final boolean DEBUG = false;
+	final boolean DEBUG = true;
 	final boolean MONITORING = false;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -25,7 +25,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		coords = new Tuple[listsize];
 		if(DEBUG)System.out.println("created coords");
@@ -70,8 +70,8 @@ public class Main {
 		
 		tour = twoOPT(tour);
 		print(tour);
-			//double dist = calcTotalTourLength(tour);
-			//System.out.println("distance after 2opt = " +Double.toString(dist));
+			double dist = calcTotalTourLength(tour);
+			System.out.println("distance after 2opt/2.5opt = " +Double.toString(dist));
 		
 		
 	}
@@ -96,9 +96,10 @@ public class Main {
 		Double foundBetterTwoHalfOpt;
 		int iter = 0;
 		while(iter <10){
-			foundBetterTwoOpt = (Double) null;
-			for(int i = 0; i<listsize-1; i++){
-				for(int j = i+1; j<listsize; j++){
+			foundBetterTwoOpt = null;
+			foundBetterTwoHalfOpt = null; 
+			for(int i = 2; i<listsize-1; i++){
+				for(int j = i+2; j<listsize; j++){
 					foundBetterTwoOpt = calcDistSwitch(tour, i, j);
 					foundBetterTwoHalfOpt = twoFive(tour, i, j);
 					if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt != null){
@@ -200,7 +201,11 @@ public class Main {
 		int b = j+1;
 		int c = j;
 		tour[j] = b;
-		tour[j+1] = c;
+		if(j == listsize-1){
+			c = tour[0];
+		} else{
+			tour[j+1] = c;
+		}
 		return tour;
 	}
 	
