@@ -106,7 +106,7 @@ public class Main {
 					resTwo = calcDistSwitch(tour, i, j);
 					
 					if(resTwo != null && resTwoFive != null){
-						System.out.println("Twofive: "+resTwoFive+" Two: "+resTwo);
+						//System.out.println("Twofive: "+resTwoFive+" Two: "+resTwo);
 						if(resTwoFive > resTwo){
 							tour = twoOptSwap(tour, i, j);
 						}else{
@@ -180,7 +180,7 @@ public class Main {
 		distnew += distances[tour[i]][tour[jplusone]];
 		
 		if(distold > distnew){
-			return distnew;
+			return distold-distnew;
 		}
 		return null;
 	}
@@ -255,7 +255,7 @@ public class Main {
 		
 		
 		if(distold > distnew){
-			return distnew;
+			return distold-distnew;
 		}
 		return null;
 	}
