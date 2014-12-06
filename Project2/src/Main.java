@@ -107,13 +107,13 @@ public class Main {
 							tour = twoOptSwap(tour, i, j);
 						}else if(foundBetterTwoOpt < foundBetterTwoHalfOpt){
 							tour = twoOptSwap(tour, i, j);
-							tour = twoHalfOptSwap(tour, i, j);
+							tour = twoHalfOptSwap(tour,j);
 						}
 					}else if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt == null){
 						tour = twoOptSwap(tour, i, j);
 					}else if(foundBetterTwoOpt == null && foundBetterTwoHalfOpt != null){
 						tour = twoOptSwap(tour, i, j);
-						tour = twoHalfOptSwap(tour, i, j);
+						tour = twoHalfOptSwap(tour,j);
 					}else{
 						continue;
 					}
@@ -196,16 +196,11 @@ public class Main {
 		return tour;
 	}
 	
-	public int[] twoHalfOptSwap(int[] tour, int i, int j){
-		int a = j-1;
-		int b = j+1;
-		int c = j;
+	public int[] twoHalfOptSwap(int[] tour, int j){
+		int a = j;
+		int b = j-1;
 		tour[j] = b;
-		if(j == listsize-1){
-			c = tour[0];
-		} else{
-			tour[j+1] = c;
-		}
+		tour[j-1] = a;
 		return tour;
 	}
 	
