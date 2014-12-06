@@ -92,26 +92,26 @@ public class Main {
 	}
 	
 	public int[] twoOPT(int[] tour){
-		Double foundBetterTwoOpt;
-		Double foundBetterTwoHalfOpt;
+		Double tODist;
+		Double tHODist;
 		int iter = 0;
 		while(iter <10){
-			foundBetterTwoOpt = null;
-			foundBetterTwoHalfOpt = null; 
-			for(int i = 2; i<listsize-1; i++){
+			tODist = null;
+			tHODist = null; 
+			for(int i = 0; i<listsize-1; i++){
 				for(int j = i+2; j<listsize; j++){
-					foundBetterTwoOpt = calcDistSwitch(tour, i, j);
-					foundBetterTwoHalfOpt = twoFive(tour, j);
-					if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt != null){
-						if(foundBetterTwoOpt > foundBetterTwoHalfOpt || foundBetterTwoOpt == foundBetterTwoHalfOpt){
+					tODist = calcDistSwitch(tour, i, j);
+					tHODist = twoFive(tour, i, j);
+					if(tODist != null && tHODist != null){ //both not null, we have found a better tour
+						if(tODist > tHODist || tODist == tHODist){ //2-opt gives better tour or they are equal
 							tour = twoOptSwap(tour, i, j);
-						}else if(foundBetterTwoOpt < foundBetterTwoHalfOpt){
+						}else if(tODist < tHODist){ //2.5-opt gives better
 							tour = twoOptSwap(tour, i, j);
 							tour = twoHalfOptSwap(tour,j);
 						}
-					}else if(foundBetterTwoOpt != null && foundBetterTwoHalfOpt == null){
+					}else if(tODist != null && tHODist == null){
 						tour = twoOptSwap(tour, i, j);
-					}else if(foundBetterTwoOpt == null && foundBetterTwoHalfOpt != null){
+					}else if(tODist == null && tHODist != null){
 						tour = twoOptSwap(tour, i, j);
 						tour = twoHalfOptSwap(tour,j);
 					}else{
@@ -165,17 +165,40 @@ public class Main {
 	}
 	
 	public Double calcDistSwitch(int[] tour, int i, int j){
-		int iminone = i-1;
-		int jplusone = j+1;
-		if(i == 0) iminone = listsize-1;
-		if(j == listsize-1) jplusone = 0;
+		int iminone, imintwo, ione, itwo, jminone, jmintwo, jone, jtwo;
+		ione = tour[i+1];
+		jminone = tour[j-1];
+		if(i == 0){ 
+			iminone = tour[listsize-1];
+			imintwo = tour[listsize-2];
+		} else if(i == 1){
+			iminone = tour[i-1];
+			imintwo = tour[listsize-1];
+		} else{
+			iminone = tour[i-1];
+			imintwo = tour[i-2];
+		}
+		if(j == listsize-1){
+			jone = tour[0];
+			jtwo = tour[1];
+		} else if(j == listsize-2){
+			jone = tour[listsize-1];
+			jtwo = tour[0];
+		} else{
+			jone = tour[j+1];
+			jtwo = tour[j+2];
+		}
 		
 		double difference = 0;
-		difference += distances[tour[iminone]][tour[i]];
-		difference += distances[tour[j]][tour[jplusone]];
+		difference += distances[iminone][j];
+		difference += distances[j][ione];
+		difference += distances[jminone][i];
+		difference += distances[i][jone];
 		
-		difference -= distances[tour[iminone]][tour[j]];
-		difference -= distances[tour[i]][tour[jplusone]];
+		difference -= distances[iminone][i];
+		difference -= distances[i][ione];
+		difference -= distances[jminone][j];
+		difference -= distances[j][jone];
 		
 		if(difference > 0){
 			return difference;
@@ -197,31 +220,46 @@ public class Main {
 	}
 	
 	public int[] twoHalfOptSwap(int[] tour, int j){
-		int a = j;
-		int b = j-1;
+		int a = tour[j];
+		int b = tour[j-1];
 		tour[j] = b;
 		tour[j-1] = a;
 		return tour;
 	}
 	
-	public Double twoFive(int[] tour, int point){
-		int jmintwo, jminone, j, jone;
-		jmintwo = tour[point-2];
-		jminone = tour[point-1];
-		j = tour[point];
-		if(point == listsize-1){
-			jone = tour[0];
+	public Double twoFive(int[] tour, int i, int j){
+		int jmintwo, jminone, jone, ione, iminone, jtwo, itwo;
+		jmintwo = tour[j-2];
+		jminone = tour[j-1];
+		j = tour[j];
+		ione = tour[i+1];
+		itwo = tour[i+2];
+		if(i == 0){
+			iminone = tour[listsize-1];
 		}else{
-			jone = tour[point+1];
+			iminone = tour[i-1];
 		}
-		double dist = 0;
-		dist += distances[jmintwo][jminone];
-		dist += distances[jminone][j];
-		dist += distances[j][jone];
+		if(j == listsize-1){
+			jone = tour[0];
+			jtwo = tour[1];
+		}else if(j == listsize-2){
+			jone = tour[j+1];
+			jtwo = tour[0];
+		}else{
+			jone = tour[j+1];
+			jtwo = tour[j+2];
+		}
 		
-		dist -= distances[jmintwo][j];
-		dist -= distances[j][jminone];
-		dist -= distances[jminone][jone];
+		double dist = 0;
+		dist += distances[i][jone];
+		dist += distances[jone][itwo];
+		dist += distances[ione][j];
+		dist += distances[j][iminone];
+		
+		dist -= distances[ione][i];
+		dist -= distances[i][itwo];
+		dist -= distances[j][jone];
+		dist -= distances[jone][jtwo];
 		
 		//if ione i j jone jtwo was longer than ione jone i j jtwo return true for "better solution"
 		if(dist > 0){
