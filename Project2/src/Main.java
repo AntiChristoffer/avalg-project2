@@ -16,7 +16,7 @@ public class Main {
 	Tuple[] coords;
 	double[][] distances;
 	int listsize;
-	final boolean DEBUG = true;
+	final boolean DEBUG = false;
 	final boolean MONITORING = false;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
@@ -197,22 +197,29 @@ public class Main {
 	}
 	
 	public int[] twoHalfOptSwap(int[] tour, int start, int end){
-		int ione, jone;
-		ione = start+1;
-		if(end == listsize-1){
-			jone = 0;
+		int toMove;
+		if(end == listsize -1){
+			toMove = tour[0];
 		}else{
-			jone = end+1;
+			toMove = tour[end+1];
 		}
-		int toMove = tour[jone];
-		int tmpVal;
-		while(ione < jone){
-			tmpVal = tour[ione];
-			tour[ione+1] = tmpVal;
-			ione++;
+		
+		int i = start+1;
+		int first = tour[i];
+		while(i < end-1){
+			int next = tour[i+1];
+			tour[i+1] = first;
+			first = next;
+			i++;
 		}
-		tour[ione] = toMove;
-
+		
+		tour[start+1] = toMove;
+		if(end == listsize -1){
+			tour[0] = first;
+		}else{
+			tour[end+1] = first;
+		}
+		
 		return tour;
 	}
 	
