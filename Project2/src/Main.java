@@ -25,7 +25,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		distances = new double[listsize][listsize];
 		coords = new Tuple[listsize];
@@ -46,17 +46,8 @@ public class Main {
 			}
 		}
 		br.close();
-		
-		/*
-		for(int i=0; i<listsize;i++){
-			distances[i][i] = 0;
-			for(int j=0; j<i; j++){
-				double dist = calcDist(coords[i], coords[j]);
-				distances[i][j] = dist;
-				distances[j][i] = dist;
-			}
-		}*/
-		printMatrix();
+
+		//printMatrix();
 		
 		if(MONITORING){
 			BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
@@ -103,32 +94,27 @@ public class Main {
 		Double resTwo;
 		Double resTwoFive;
 		int iter = 0;
-		while(iter <10){
+		long endTime = System.currentTimeMillis()+1400;
+		while(iter < 2 && System.currentTimeMillis()<endTime){
+			boolean changed = false;
 			for(int i = 0; i<listsize-1; i++){
 				for(int j = i+2; j<listsize; j++){
-					resTwo = null;
-					resTwoFive = null; 
-					if(i > 1){
-						resTwoFive = twoFive(tour, i, j);
-					}
 					resTwo = calcDistSwitch(tour, i, j);
-					
-					if(resTwo != null && resTwoFive != null){
-						//System.out.println("Twofive: "+resTwoFive+" Two: "+resTwo);
-						if(resTwoFive > resTwo){
-							tour = twoOptSwap(tour, i, j);
-						}else{
-							tour = twoHalfOptSwap(tour, i, j);
-						}
-					}else if(resTwo != null){
+					if(resTwo != null){
 						tour = twoOptSwap(tour, i, j);
-					}else if(resTwoFive != null){
-						tour = twoHalfOptSwap(tour, i, j);
-					}else{
-						continue;
+						changed = true;
+					}
+					
+					if(i > 1 && (j-i) > 1){
+						resTwoFive = twoFive(tour, i, j);
+						if(resTwoFive != null){
+							tour = twoHalfOptSwap(tour, i, j);
+							changed = true;
+						}
 					}
 				}
 			}
+			if(changed) iter = 0;
 			iter++;
 		}
 		return tour;
@@ -173,19 +159,28 @@ public class Main {
 		return distance;
 	}
 	
-	public Double calcDistSwitch(int[] tour, int i, int j){
-		int iminone = i-1;
-		int jplusone = j+1;
-		if(i == 0) iminone = listsize-1;
-		if(j == listsize-1) jplusone = 0;
+	public Double calcDistSwitch(int[] tour, int start, int end){
+		int iminone, i, j, jone;
+		i = tour[start];
+		j = tour[end];
+		if(start == 0){
+			iminone = tour[listsize-1];
+		}else{
+			iminone = tour[start -1];
+		}
+		if(end == listsize-1){
+			jone = tour[0];
+		}else{
+			jone = tour[end+1];
+		}
 		
 		double distold = 0;
-		distold += distances[tour[iminone]][tour[i]];
-		distold += distances[tour[j]][tour[jplusone]];
+		distold += distances[iminone][i];
+		distold += distances[j][jone];
 		
 		double distnew = 0;
-		distnew += distances[tour[iminone]][tour[j]];
-		distnew += distances[tour[i]][tour[jplusone]];
+		distnew += distances[iminone][j];
+		distnew += distances[i][jone];
 		
 		if(distold > distnew){
 			return distold-distnew;
