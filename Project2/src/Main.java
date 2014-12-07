@@ -16,9 +16,9 @@ public class Main {
 	Tuple[] coords;
 	double[][] distances;
 	int listsize;
-	final boolean DEBUG = false;
+	final boolean DEBUG = true;
 	final boolean MONITORING = false;
-	final double MINCHANGE = 10.0;
+	final double MINCHANGE = 0.005;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
@@ -26,7 +26,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
+		BufferedReader br = new BufferedReader(new FileReader("newSampleFixed.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		distances = new double[listsize][listsize];
 		coords = new Tuple[listsize];
@@ -51,7 +51,7 @@ public class Main {
 		//printMatrix();
 		
 		if(MONITORING){
-			BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
+			BufferedReader brtemp = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
 			System.out.println("Enter Digit 1:");
 			while(Integer.parseInt(brtemp.readLine()) != 1){
 				System.out.println("1 sa jag ju!");
@@ -69,7 +69,7 @@ public class Main {
 		}
 		
 		tour = twoOPT(tour);
-		print(tour);
+		//print(tour);
 			double dist = calcTotalTourLength(tour);
 			System.out.println("distance after 2opt/2.5opt = " +Double.toString(dist));
 		
@@ -100,9 +100,11 @@ public class Main {
 			boolean changed = false;
 			for(int i = 0; i<listsize-1; i++){
 				for(int j = i+2; j<listsize; j++){
+					
+					if(i == 0 && j == listsize-1) continue;
+					
 					resTwo = calcDistSwitch(tour, i, j);
 					if(resTwo != null){
-						System.out.println("resTwo = " + resTwo);
 						tour = twoOptSwap(tour, i, j);
 						changed = true;
 					}
@@ -185,8 +187,6 @@ public class Main {
 		distnew += distances[i][jone];
 		
 		if(distold - distnew > MINCHANGE){
-			System.out.println("distold = " +distold);
-			System.out.println("distnew = " +distnew);
 			return distold-distnew;
 		}
 		return null;
