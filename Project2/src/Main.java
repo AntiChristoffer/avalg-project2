@@ -18,7 +18,7 @@ public class Main {
 	int listsize;
 	final boolean DEBUG = false;
 	final boolean MONITORING = false;
-	final double MINCHANGE = 100.0;
+	final double MINCHANGE = 10.0;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
@@ -102,6 +102,7 @@ public class Main {
 				for(int j = i+2; j<listsize; j++){
 					resTwo = calcDistSwitch(tour, i, j);
 					if(resTwo != null){
+						System.out.println("resTwo = " + resTwo);
 						tour = twoOptSwap(tour, i, j);
 						changed = true;
 					}
@@ -184,6 +185,8 @@ public class Main {
 		distnew += distances[i][jone];
 		
 		if(distold - distnew > MINCHANGE){
+			System.out.println("distold = " +distold);
+			System.out.println("distnew = " +distnew);
 			return distold-distnew;
 		}
 		return null;
