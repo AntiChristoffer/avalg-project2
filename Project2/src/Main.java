@@ -18,6 +18,7 @@ public class Main {
 	int listsize;
 	final boolean DEBUG = false;
 	final boolean MONITORING = false;
+	final double MINCHANGE = 100.0;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
@@ -25,7 +26,7 @@ public class Main {
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));//(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
+		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		distances = new double[listsize][listsize];
 		coords = new Tuple[listsize];
@@ -95,7 +96,7 @@ public class Main {
 		Double resTwoFive;
 		int iter = 0;
 		long endTime = System.currentTimeMillis()+1400;
-		while(iter < 2 && System.currentTimeMillis()<endTime){
+		while(iter < 2){ //&& System.currentTimeMillis()<endTime){
 			boolean changed = false;
 			for(int i = 0; i<listsize-1; i++){
 				for(int j = i+2; j<listsize; j++){
@@ -182,7 +183,7 @@ public class Main {
 		distnew += distances[iminone][j];
 		distnew += distances[i][jone];
 		
-		if(distold > distnew){
+		if(distold - distnew > MINCHANGE){
 			return distold-distnew;
 		}
 		return null;
@@ -259,7 +260,7 @@ public class Main {
 		distnew += distances[j][jtwo];
 		
 		
-		if(distold > distnew){
+		if(distold - distnew > MINCHANGE){
 			return distold-distnew;
 		}
 		return null;
