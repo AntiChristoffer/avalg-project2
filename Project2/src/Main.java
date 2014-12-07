@@ -16,17 +16,25 @@ public class Main {
 	Tuple[] coords;
 	double[][] distances;
 	int listsize;
-	final boolean DEBUG = true;
-	final boolean MONITORING = false;
-	final double MINCHANGE = 0.005;
+	final boolean DEBUG = false;
+	final boolean TESTING = true;
+	final static boolean MONITORING = false;
+	final double MINCHANGE = 1;
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		Main main = new Main();
+		if(MONITORING){
+			BufferedReader brtemp = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Enter Digit 1:");
+			while(Integer.parseInt(brtemp.readLine()) != 1){
+				System.out.println("1 sa jag ju!");
+			}
+		}
 		main.run();
 	}
 	
 	public void run() throws NumberFormatException, IOException{
-		BufferedReader br = new BufferedReader(new FileReader("newSampleFixed.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
+		BufferedReader br = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)); on Kattis submission;
 		listsize = Integer.parseInt(br.readLine());
 		distances = new double[listsize][listsize];
 		coords = new Tuple[listsize];
@@ -50,30 +58,33 @@ public class Main {
 
 		//printMatrix();
 		
-		if(MONITORING){
-			BufferedReader brtemp = new BufferedReader(new FileReader("sample.txt")); // TODO - change to (new InputStreamReader(System.in)) on Kattis submission;
-			System.out.println("Enter Digit 1:");
-			while(Integer.parseInt(brtemp.readLine()) != 1){
-				System.out.println("1 sa jag ju!");
-			}
-		}
+		
 		
 		int[] tour = new int[listsize];
 		if(DEBUG)System.out.println("created array");
 		
 		tour = greedyTour(coords);
-		if(DEBUG){
+		double optimal = 276.0;
+		if(TESTING){
 			double dist = calcTotalTourLength(tour);
 			print(tour);
 			System.out.println("distance after greedy = " +Double.toString(dist));
+			System.out.println("differs to optimal with: "+Double.toString(dist-optimal));
+			
+			int[] twotour = tour.clone();
+			twotour = twoOPT(twotour);
+			print(twotour);
+			double twodist = calcTotalTourLength(twotour);
+			System.out.println("distance after 2opt = "+Double.toString(twodist));
+			System.out.println("differs to optimal with: "+Double.toString(twodist-optimal));
 		}
-		
-		tour = twoOPT(tour);
-		//print(tour);
-			double dist = calcTotalTourLength(tour);
-			System.out.println("distance after 2opt/2.5opt = " +Double.toString(dist));
-		
-		
+		tour = twoFiveOPT(tour);
+		print(tour);
+		if(TESTING){
+			double twofivedist = calcTotalTourLength(tour);
+			System.out.println("distance after 2opt/2.5opt = " +Double.toString(twofivedist));
+			System.out.println("differs to optimal with: "+Double.toString(twofivedist-optimal));
+		}
 	}
 	
 	public void printMatrix(){
@@ -92,6 +103,30 @@ public class Main {
 	}
 	
 	public int[] twoOPT(int[] tour){
+		Double resTwo;
+		int iter = 0;
+		long endTime = System.currentTimeMillis()+1400;
+		while(iter < 2){ //&& System.currentTimeMillis()<endTime){
+			boolean changed = false;
+			for(int i = 0; i<listsize-1; i++){
+				for(int j = i+2; j<listsize; j++){
+					
+					if(i == 0 && j == listsize-1) continue;
+					
+					resTwo = calcDistSwitch(tour, i, j);
+					if(resTwo != null){
+						tour = twoOptSwap(tour, i, j);
+						changed = true;
+					}
+				}
+			}
+			if(changed) iter = 0;
+			else iter++;
+		}
+		return tour;
+	}
+	
+	public int[] twoFiveOPT(int[] tour){
 		Double resTwo;
 		Double resTwoFive;
 		int iter = 0;
@@ -147,11 +182,11 @@ public class Main {
 	}
 
 	public double calcDist(Tuple first, Tuple second){
-		double a = Math.abs(first.getX()-second.getX());
-		double b = Math.abs(first.getY()-second.getY());
+		double a = first.getX()-second.getX();
+		double b = first.getY()-second.getY();
 		a *= a;
 		b *= b;
-		return Math.sqrt(a+b);
+		return Math.round(Math.sqrt(a+b));
 	}
 	
 	public double calcTotalTourLength(int[] tour){
@@ -268,4 +303,8 @@ public class Main {
 		}
 		return null;
 	}
+	
+
+	
+	
 }
